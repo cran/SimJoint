@@ -29,6 +29,10 @@ SJspearmanPMF <- function(PMFs, sampleSize, cor, stochasticStepDomain = as.numer
     .Call(`_SimJoint_SJspearmanPMF`, PMFs, sampleSize, cor, stochasticStepDomain, errorType, seed, maxCore, convergenceTail, iterLimit, verbose)
 }
 
+postSimOpt <- function(X, cor, Xcor = matrix(), acceptProb = 1.0, seed = 123L, convergenceTail = 10000L) {
+    .Call(`_SimJoint_postSimOpt`, X, cor, Xcor, acceptProb, seed, convergenceTail)
+}
+
 LHSpmf <- function(pmf, sampleSize, seed) {
     .Call(`_SimJoint_LHSpmf`, pmf, sampleSize, seed)
 }

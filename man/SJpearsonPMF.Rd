@@ -74,7 +74,6 @@ A list of size 2.
 # Use the same example from <https://cran.r-project.org/web/packages/
 #                            SimMultiCorrData/vignettes/workflow.html>.
 # =============================================================================
-rm(list = ls()); gc()
 set.seed(123)
 N = 10000L # Sample size.
 K = 10L # 10 marginals.
@@ -115,7 +114,6 @@ summary(as.numeric(abs(result$cor / Rey - 1)))
 # =============================================================================
 # Play with random nonparametric PMFs.
 # =============================================================================
-rm(list = ls()); gc()
 set.seed(123)
 N = 2000L
 K = 20L

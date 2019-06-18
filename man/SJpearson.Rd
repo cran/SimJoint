@@ -42,7 +42,7 @@ Cost function for convergence test.
 \code{"meanSquare"}: mean squared error. Default.
 }
   \item{seed}{
-An integer or an integer vector of size 626. A single integer seeds a \code{std::mt19937_64} (C++11 Mersenne Twister) generator the usual way. An integer vector of size 626 supplies all the bits for a \code{std::mt19937_64} object.
+An integer or an integer vector of size 626. A single integer seeds a \code{std::mt19937_64} (C++11 Mersenne Twister) generator the usual way. An integer vector of size 626 supplies all the bits for a \code{std::mt19937_64} object. Default 123.
 }
   \item{maxCore}{
 An integer. Maximal threads to invoke. Default 7. Better be no greater than the total number of virtual cores on machine.
@@ -71,7 +71,7 @@ A list of size 2.
 # from <https://cran.r-project.org/web/packages/SimMultiCorrData/
 #       vignettes/workflow.html>.
 # =============================================================================
-rm(list = ls()); gc()
+
 set.seed(123)
 N = 10000L # Sample size.
 K = 10L    # 10 marginals.
@@ -79,9 +79,9 @@ K = 10L    # 10 marginals.
 marginals = cbind(
   rnorm(N), rchisq(N, 4), rbeta(N, 4, 2),
   SimJoint::LHSpmf(data.frame(val = 1:3, P = c(0.3, 0.45, 0.25)), N,
-         seed = sample(1e6L, 1)),
+               seed = sample(1e6L, 1)),
   SimJoint::LHSpmf(data.frame(val = 1:4, P = c(0.2, 0.3, 0.4, 0.1)), N,
-         seed = sample(1e6L, 1)),
+               seed = sample(1e6L, 1)),
   rpois(N, 1), rpois(N, 5), rpois(N, 10),
   rnbinom(N, 3, 0.2), rnbinom(N, 6, 0.8))
 # The seeding for `LHSpmf()` is unhealthy, but OK for small examples.
@@ -106,8 +106,6 @@ system.time({result = SimJoint::SJpearson(
   maxCore = 1, convergenceTail = 8, verbose = FALSE)})
 # user  system elapsed
 # 0.30    0.00    0.29
-
-
 # One the same platform, single-threaded speed (Intel i7-4770 CPU
 # @ 3.40GHz, 32GB RAM, Windows 10, g++ 4.9.3 -Ofast, R 3.5.2) is more
 # than 50 times faster than `SimMultiCorrData::rcorrvar()`:
@@ -115,16 +113,25 @@ system.time({result = SimJoint::SJpearson(
 # 16.05   0.34   16.42
 
 
+# Check error statistics.
 summary(as.numeric(round(cor(result$X) - Rey, 6)))
 # Min.          1st Qu.     Median       Mean    3rd Qu.       Max.
 # -0.000365   -0.000133  -0.000028  -0.000047  0.000067    0.000301
 
 
-# Max error magnitude is less than 5% of that from
+# Post simulation optimization further reduce the errors:
+resultOpt = SimJoint::postSimOpt(
+  X = result$X, cor = Rey, convergenceTail = 10000)
+summary(as.numeric(round(cor(resultOpt$X) - Rey, 6)))
+# Min.        1st Qu.    Median      Mean   3rd Qu.      Max.
+# -7.10e-05 -3.10e-05 -1.15e-05 -6.48e-06  9.00e-06  7.10e-05
+
+
+# Max error magnitude is less than 1% of that from
 # `SimMultiCorrData::rcorrvar()`:
 # Min.          1st Qu.     Median       Mean    3rd Qu.       Max.
 # -0.008336   -0.001321          0  -0.000329   0.001212    0.00339
-# This able is reported in Step 4, correlation methods 1 or 2.
+# This table is reported in Step 4, correlation methods 1 or 2.
 
 
 
@@ -140,7 +147,7 @@ summary(as.numeric(round(cor(result$X) - Rey, 6)))
 \donttest{# Test Ruscio-Kaczetow's code.
 set.seed(123)
 RuscioKaczetow = GenData(Pop = as.data.frame(marginals),
-                   Rey, N = 1000) # By default, the function takes 1000
+                         Rey, N = 1000) # By default, the function takes 1000
 # samples from each marginal population of size 10000.
 summary(round(as.numeric(cor(RuscioKaczetow) - Rey), 6))
 # Min.         1st Qu.    Median      Mean   3rd Qu.      Max.
@@ -150,10 +157,16 @@ summary(round(as.numeric(cor(RuscioKaczetow) - Rey), 6))
 
 result = SimJoint::SJpearson(
   X = apply(marginals, 2, function(x) sort(sample(x, 1000, replace = TRUE))),
-  cor = Rey, errorType = "maxRela", maxCore = 2)
+  cor = Rey, errorType = "maxRela", maxCore = 2) # CRAN does not allow more
+# than 2 threads for running examples.
 summary(round(as.numeric(cor(result$X) - Rey), 6))
 # Min.           1st Qu.     Median       Mean    3rd Qu.       Max.
-# -0.0037860 -0.0005100   0.0000000  0.0003257  0.0010320  0.0038440
+# -0.0055640  -0.0014850 -0.0004810 -0.0007872  0.0000000  0.0025920
+resultOpt = SimJoint::postSimOpt(
+  X = result$X, cor = Rey, convergenceTail = 10000)
+summary(as.numeric(round(cor(resultOpt$X) - Rey, 6)))
+# Min.          1st Qu.     Median       Mean    3rd Qu.       Max.
+# -6.240e-04 -2.930e-04 -2.550e-05 -6.532e-05  1.300e-04  5.490e-04
 
 
 
@@ -164,7 +177,7 @@ summary(round(as.numeric(cor(result$X) - Rey), 6))
 # example above Statistics cannot be collected because it has been running
 # for more than 10 hours.
 # =============================================================================
-\donttest{# library(GenOrd)
+\donttest{# Library `GenOrd` should have been installed and attached.
 system.time({resultGenOrd = ordsample(
   N, marginal = lapply(1L : K, function(x) (1 : (N - 1)) / N), Rey,
   support = as.data.frame(marginals))})
@@ -178,16 +191,14 @@ system.time({resultGenOrd = ordsample(
 # of <https://cran.r-project.org/web/packages/EnvStats/EnvStats.pdf>. The
 # function `simulateVector()` imposes rank correlations.
 # =============================================================================
-\donttest{rm(list = ls()); gc()
-# library(EnvStats)
+\donttest{# Library `EnvStats` should have been installed and attached.
 cor.mat = matrix(c(1, 0.8, 0, 0.5, 0.8, 1, 0, 0.7, 0, 0, 1, 0.2, 0.5,
                    0.7, 0.2, 1), 4, 4)
-pareto.rns <- simulateVector(100, "pareto",
-  list(location = 10, shape = 2), sample.method = "LHS",
-  seed = 56)
-mat <- simulateMvMatrix(1000,
-  distributions = c(Normal = "norm", Lognormal = "lnormAlt",
-                    Beta = "beta", Empirical = "emp"),
+pareto.rns <- simulateVector(100, "pareto", list(location = 10, shape = 2),
+                             sample.method = "LHS", seed = 56)
+mat <- simulateMvMatrix(
+  1000, distributions = c(Normal = "norm", Lognormal = "lnormAlt",
+                          Beta = "beta", Empirical = "emp"),
   param.list = list(Normal = list(mean=10, sd=2),
                     Lognormal = list(mean=10, cv=1),
                     Beta = list(shape1 = 2, shape2 = 3),
@@ -232,7 +243,6 @@ round(cor(result, method = "spearman"), 2)
 # ============================================================================
 # Play random numbers.
 # ============================================================================
-rm(list = ls()); gc()
 set.seed(123)
 N = 2000L
 K = 20L
@@ -254,24 +264,26 @@ while(TRUE)
 }
 
 
-system.time({result = SimJoint::SJpearson(
+result = SimJoint::SJpearson(
   X = marginals, cor = targetCor, errorType = "meanSquare", seed = 456,
-  maxCore = 2, convergenceTail = 8, verbose = TRUE)})
+  maxCore = 2, convergenceTail = 8, verbose = TRUE)
+resultOpt = SimJoint::postSimOpt(
+  X = result$X, cor = targetCor, convergenceTail = 10000)
 
 
 # Visualize errors and correlation matrices.
 par(mfrow = c(2, 2))
-hist(result$cor - targetCor, breaks = K * K, main = NULL,
+hist(resultOpt$cor - targetCor, breaks = K * K, main = NULL,
      xlab = "Error")
-hist(result$cor / targetCor - 1, breaks = K * K, main = NULL,
+hist(resultOpt$cor / targetCor - 1, breaks = K * K, main = NULL,
      xlab = "Relative error")
 zlim = range(range(targetCor[targetCor < 1]),
-             range(result$cor[result$cor < 1]))
+             range(resultOpt$cor[resultOpt$cor < 1]))
 col = colorRampPalette(c("blue", "red", "yellow"))(K * K)
 tmp = targetCor[, K : 1L]
 image(tmp, xaxt = "n", yaxt = "n", zlim = zlim, bty = "n",
       main = "Target cor", col = col)
-tmp = result$cor[, K : 1L]
+tmp = resultOpt$cor[, K : 1L]
 image(tmp, xaxt = "n", yaxt = "n", zlim = zlim, bty = "n",
       main = "Cor reached", col = col)
 par(mfrow = c(1, 1))
@@ -284,7 +296,6 @@ par(mfrow = c(1, 1))
 # nonlinear and the target correlations are hard to impose. Other packages
 # would fail or report theoretical infeasibility.
 # =============================================================================
-rm(list = ls()); gc()
 set.seed(123)
 N = 10000L
 K = 10L
@@ -338,46 +349,50 @@ while(TRUE)
 result = SimJoint::SJpearson(
   X = marginals, cor = targetCor, stochasticStepDomain = c(0, 1),
   errorType = "meanSquare", seed = 456, maxCore = 2, convergenceTail = 8)
+\donttest{resultOpt = SimJoint::postSimOpt( # Could take many seconds.
+  X = result$X, cor = targetCor, convergenceTail = 10000)
 
 
 # Visualize errors and correlation matrices.
 par(mfrow = c(2, 2))
-hist(result$cor - targetCor, breaks = K * K, main = NULL,
+hist(resultOpt$cor - targetCor, breaks = K * K, main = NULL,
      xlab = "Error")
-hist(result$cor / targetCor - 1, breaks = K * K, main = NULL,
+hist(resultOpt$cor / targetCor - 1, breaks = K * K, main = NULL,
      xlab = "Relative error")
 zlim = range(range(targetCor[targetCor < 1]),
-             range(result$cor[result$cor < 1]))
+             range(resultOpt$cor[resultOpt$cor < 1]))
 col = colorRampPalette(c("blue", "red", "yellow"))(K * K)
 tmp = targetCor[, K : 1L]
 image(tmp, xaxt = "n", yaxt = "n", zlim = zlim, bty = "n",
       main = "Target cor", col = col)
-tmp = result$cor[, K : 1L]
+tmp = resultOpt$cor[, K : 1L]
 image(tmp, xaxt = "n", yaxt = "n", zlim = zlim, bty = "n",
       main = "Cor reached", col = col)
-par(mfrow = c(1, 1))
+par(mfrow = c(1, 1))}
 
 
 # Different `errorType` could make a difference.
 result = SimJoint::SJpearson(
   X = marginals, cor = targetCor, stochasticStepDomain = c(0, 1),
   errorType = "maxRela", seed = 456, maxCore = 2, convergenceTail = 8)
+\donttest{resultOpt = SimJoint::postSimOpt(
+  X = result$X, cor = targetCor, convergenceTail = 10000)
 
 
 # Visualize errors and correlation matrices.
 par(mfrow = c(2, 2))
-hist(result$cor - targetCor, breaks = K * K, main = NULL,
+hist(resultOpt$cor - targetCor, breaks = K * K, main = NULL,
      xlab = "Error")
-hist(result$cor / targetCor - 1, breaks = K * K, main = NULL,
+hist(resultOpt$cor / targetCor - 1, breaks = K * K, main = NULL,
      xlab = "Relative error")
 zlim = range(range(targetCor[targetCor < 1]),
-             range(result$cor[result$cor < 1]))
+             range(resultOpt$cor[resultOpt$cor < 1]))
 col = colorRampPalette(c("blue", "red", "yellow"))(K * K)
 tmp = targetCor[, K : 1L]
 image(tmp, xaxt = "n", yaxt = "n", zlim = zlim, bty = "n",
       main = "Target cor", col = col)
-tmp = result$cor[, K : 1L]
+tmp = resultOpt$cor[, K : 1L]
 image(tmp, xaxt = "n", yaxt = "n", zlim = zlim, bty = "n",
       main = "Cor reached", col = col)
-par(mfrow = c(1, 1))
+par(mfrow = c(1, 1))}
 }

@@ -39,4 +39,3 @@ summary(corMat2[corMat2 < 1])
 # Min.           1st Qu.    Median       Mean    3rd Qu.       Max.
 # -2.341e-17 -3.627e-18  3.766e-18  4.018e-18  1.234e-17  3.444e-17
 }
-

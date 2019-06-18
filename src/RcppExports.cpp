@@ -135,6 +135,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// postSimOpt
+List postSimOpt(NumericMatrix X, NumericMatrix cor, NumericMatrix Xcor, NumericVector acceptProb, IntegerVector seed, int convergenceTail);
+RcppExport SEXP _SimJoint_postSimOpt(SEXP XSEXP, SEXP corSEXP, SEXP XcorSEXP, SEXP acceptProbSEXP, SEXP seedSEXP, SEXP convergenceTailSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type cor(corSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Xcor(XcorSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type acceptProb(acceptProbSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< int >::type convergenceTail(convergenceTailSEXP);
+    rcpp_result_gen = Rcpp::wrap(postSimOpt(X, cor, Xcor, acceptProb, seed, convergenceTail));
+    return rcpp_result_gen;
+END_RCPP
+}
 // LHSpmf
 NumericVector LHSpmf(List pmf, int sampleSize, IntegerVector seed);
 RcppExport SEXP _SimJoint_LHSpmf(SEXP pmfSEXP, SEXP sampleSizeSEXP, SEXP seedSEXP) {
@@ -168,6 +184,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SimJoint_xSJpearsonPMF", (DL_FUNC) &_SimJoint_xSJpearsonPMF, 11},
     {"_SimJoint_SJspearman", (DL_FUNC) &_SimJoint_SJspearman, 9},
     {"_SimJoint_SJspearmanPMF", (DL_FUNC) &_SimJoint_SJspearmanPMF, 10},
+    {"_SimJoint_postSimOpt", (DL_FUNC) &_SimJoint_postSimOpt, 6},
     {"_SimJoint_LHSpmf", (DL_FUNC) &_SimJoint_LHSpmf, 3},
     {"_SimJoint_exportRandomState", (DL_FUNC) &_SimJoint_exportRandomState, 1},
     {NULL, NULL, 0}
