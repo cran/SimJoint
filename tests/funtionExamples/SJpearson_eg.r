@@ -10,9 +10,9 @@ K = 10L    # 10 marginals.
 # Sample from 3 PDFs, 2 nonparametric PMFs, 5 parametric PMFs:
 marginals = cbind(
   rnorm(N), rchisq(N, 4), rbeta(N, 4, 2),
-  SJMC::LHSpmf(data.frame(val = 1:3, P = c(0.3, 0.45, 0.25)), N,
+  SimJoint::LHSpmf(data.frame(val = 1:3, P = c(0.3, 0.45, 0.25)), N,
                seed = sample(1e6L, 1)),
-  SJMC::LHSpmf(data.frame(val = 1:4, P = c(0.2, 0.3, 0.4, 0.1)), N,
+  SimJoint::LHSpmf(data.frame(val = 1:4, P = c(0.2, 0.3, 0.4, 0.1)), N,
                seed = sample(1e6L, 1)),
   rpois(N, 1), rpois(N, 5), rpois(N, 10),
   rnbinom(N, 3, 0.2), rnbinom(N, 6, 0.8))
@@ -33,7 +33,7 @@ for (i in 1:nrow(Rey)) {
 }
 
 
-system.time({result = SJMC::SJpearson(
+system.time({result = SimJoint::SJpearson(
   X = marginals, cor = Rey, errorType = "meanSquare", seed = 456,
   maxCore = 1, convergenceTail = 8, verbose = FALSE)})
 # user  system elapsed
@@ -52,7 +52,7 @@ summary(as.numeric(round(cor(result$X) - Rey, 6)))
 
 
 # Post simulation optimization further reduce the errors:
-resultOpt = SJMC::postSimOpt(
+resultOpt = SimJoint::postSimOpt(
   X = result$X, cor = Rey, convergenceTail = 10000)
 summary(as.numeric(round(cor(resultOpt$X) - Rey, 6)))
 # Min.        1st Qu.    Median      Mean   3rd Qu.      Max.
@@ -87,14 +87,14 @@ summary(as.numeric(round(cor(resultOpt$X) - Rey, 6)))
 # }
 
 
-result = SJMC::SJpearson(
+result = SimJoint::SJpearson(
   X = apply(marginals, 2, function(x) sort(sample(x, 1000, replace = TRUE))),
   cor = Rey, errorType = "maxRela", maxCore = 2) # CRAN does not allow more
 # than 2 threads for running examples.
 summary(round(as.numeric(cor(result$X) - Rey), 6))
 # Min.           1st Qu.     Median       Mean    3rd Qu.       Max.
 # -0.0055640  -0.0014850 -0.0004810 -0.0007872  0.0000000  0.0025920
-resultOpt = SJMC::postSimOpt(
+resultOpt = SimJoint::postSimOpt(
   X = result$X, cor = Rey, convergenceTail = 10000)
 summary(as.numeric(round(cor(resultOpt$X) - Rey, 6)))
 # Min.          1st Qu.     Median       Mean    3rd Qu.       Max.
@@ -155,7 +155,7 @@ summary(as.numeric(round(cor(resultOpt$X) - Rey, 6)))
                     sort(sample(pareto.rns, 1000, replace = TRUE)))
   marginalsRanks = cbind(1:1000, 1:1000, 1:1000, 1:1000)
   # Simulate the joint for ranks:
-  tmpResult = SJMC::SJpearson(
+  tmpResult = SimJoint::SJpearson(
     X = marginalsRanks, cor = cor.mat, errorType = "meanSquare", seed = 456,
     maxCore = 2, convergenceTail = 8, verbose = TRUE)$X
   # Reorder `marginals` by ranks.
@@ -196,10 +196,10 @@ while(TRUE)
 }
 
 
-result = SJMC::SJpearson(
+result = SimJoint::SJpearson(
   X = marginals, cor = targetCor, errorType = "meanSquare", seed = 456,
   maxCore = 2, convergenceTail = 8, verbose = TRUE)
-resultOpt = SJMC::postSimOpt(
+resultOpt = SimJoint::postSimOpt(
   X = result$X, cor = targetCor, convergenceTail = 10000)
 
 
@@ -268,7 +268,7 @@ cat("Range of maximal correlations between marginals:",
 while(TRUE)
 {
   targetCor = sapply(frechetUpperCor, function(x)
-    runif(1, -0.1, min(0.3, x * 0.8)))
+    runif(1, -0.1, min(0.5, x * 0.8)))
   targetCor = matrix(targetCor, ncol = K)
   targetCor[lower.tri(targetCor)] = t(targetCor)[lower.tri(t(targetCor))]
   diag(targetCor) = 1
@@ -278,11 +278,11 @@ while(TRUE)
 }
 
 
-result = SJMC::SJpearson(
+system.time({result = SimJoint::SJpearson(
   X = marginals, cor = targetCor, stochasticStepDomain = c(0, 1),
-  errorType = "meanSquare", seed = 456, maxCore = 2, convergenceTail = 8)
+  errorType = "meanSquare", seed = 456, maxCore = 7, convergenceTail = 8, verbose = F)})
 # \donttest{
-resultOpt = SJMC::postSimOpt( # Could take many seconds.
+resultOpt = SimJoint::postSimOpt( # Could take many seconds.
   X = result$X, cor = targetCor, convergenceTail = 10000)
 
 
@@ -306,11 +306,11 @@ par(mfrow = c(1, 1))
 
 
 # Different `errorType` could make a difference.
-result = SJMC::SJpearson(
+result = SimJoint::SJpearson(
   X = marginals, cor = targetCor, stochasticStepDomain = c(0, 1),
   errorType = "maxRela", seed = 456, maxCore = 2, convergenceTail = 8)
 # \donttest{
-resultOpt = SJMC::postSimOpt(
+resultOpt = SimJoint::postSimOpt(
 X = result$X, cor = targetCor, convergenceTail = 10000)
 
 

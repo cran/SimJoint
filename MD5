@@ -1,8 +1,9 @@
-de6d93703cb76f8eafbf8b9f8596a010 *DESCRIPTION
+caefd0ba1eb246316c831b762875994e *DESCRIPTION
 65ff329fbf2a0a42c9ee00057d0fd652 *NAMESPACE
 a17c73e7ba337adc175939d23778696f *R/RcppExports.R
 80b7c7a1bfabd857b6b199132a75054f *build/vignette.rds
-56f0759556eb82676d6b0f7b6c41358c *inst/doc/SimulatedJointDistribution.pdf
+79a217f734fc2d4e5ba61af5de61663d *inst/NEWS.Rd
+b9d9b8bd3dfbc0f9a563b64207e51377 *inst/doc/SimulatedJointDistribution.pdf
 8b3e50b4cb4b74b5ecc2ea4990c0e324 *inst/doc/SimulatedJointDistribution.pdf.asis
 85a779abd94e8127f3d47802b707788f *man/LHSpmf.Rd
 f3fdd16cea0e1e4803f20eb8f8ac3e63 *man/SJpearson.Rd
@@ -25,7 +26,7 @@ c5c6a4fa378d3a7c6144d3edf56679a1 *src/lhsPMF.cpp
 7d75a128ee89e723fa6100bcf5cbd53f *tests/funtionExamples/LHSpmf_eg.r
 c84565bf536d3055a74d1a63c9639d39 *tests/funtionExamples/RuscioKaczetow.r
 5e87806316431c5b304074e4b58c9305 *tests/funtionExamples/SJpearsonPMF_eg.r
-623717c46f370658e36db8d943639915 *tests/funtionExamples/SJpearson_eg.r
+3e20e5fde343f10c9dbad56781a4846e *tests/funtionExamples/SJpearson_eg.r
 3a63c1676e9c31f7f3f683f582138b5c *tests/funtionExamples/SJspearmanPMF_eg.r
 16a794b5ed59f0f9e60a4b247ff2ebf5 *tests/funtionExamples/SJspearman_eg.r
 feb66dea135d93618ac0395a37b710ef *tests/funtionExamples/deCorSimDat_eg.r
