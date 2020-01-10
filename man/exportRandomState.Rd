@@ -2,10 +2,10 @@
 \alias{exportRandomState}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Export Mersenne Twister engine
+Export Permuted Congruential Generator
 }
 \description{
-Export the complete state of a Mersenne Twister engine implemented in C++ 11 standard library <random>.
+Export all the bits needed for seeding Permuted Congruential Generator.
 }
 \usage{
 exportRandomState(seed)
@@ -13,14 +13,16 @@ exportRandomState(seed)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{seed}{
-An integer for seeding a random number generator (RNG) of type \code{std::mt19937_64}.
+An integer or an integer vector of size 4 (128 bits). See
+
+<http://www.pcg-random.org/>.
 }
 }
 \details{
-The returned integer vector \code{Value} is analogous to \code{.Random.seed}. \code{Value} can seed for all functions that need a RNG in this package. In those functions, memory address of \code{Value[1]} is assigned to a pointer of type \code{std::mt19937_64}. Realization of this pointer generates random numbers when needed, and \code{Value} changes accordingly.
+The returned integer vector \code{Value} supplies all the bits necessary for determining the state of a \code{pcg64} generator. \code{Value} can seed for all functions that need a RNG in this package. It will change after the function call, ready for seeding the \code{pcg64} generator in the next function call.
 }
 \value{
-An integer vector of size 626. It contains all the bits in a \code{std::mt19937_64} object.
+An integer vector of size 4.
 }
 
 \examples{
@@ -33,9 +35,8 @@ pmf$P = pmf$P / sum(pmf$P)
 
 
 completeRandomState = SimJoint::exportRandomState(456)
-# `completeRandomState` comprises all the bits of a Mersenne Twister
-# (C++11 std::mt19937_64) engine seeded by 456. It is similar to R's
-# `.Random.seed`.
+# `completeRandomState` comprises all the bits of a pcg64
+# engine seeded by 456. It is similar to R's `.Random.seed`.
 pmfSample1 = SimJoint::LHSpmf(pmf, 1000, completeRandomState)
 pmfSample2 = SimJoint::LHSpmf(pmf, 1000, completeRandomState)
 pmfSample3 = SimJoint::LHSpmf(pmf, 1000, completeRandomState)

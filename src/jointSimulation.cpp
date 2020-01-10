@@ -5,12 +5,39 @@
 # include <RcppArmadillo.h>
 # include <RcppParallel.h>
 # include "hpp/dnyTasking.hpp"
+# include "pcg/pcg_random.hpp"
 # include "hpp/LHSsorted.hpp"
+# include "pcg/toSeed.hpp"
 using namespace Rcpp;
 # define vec std::vector
 # define INT int64_t
-# define RNG std::mt19937_64
+// # define RNG std::mt19937_64 pcg64
+# define RNG pcg64
 # define rptr_ *__restrict__
+
+
+/*
+template<typename rengine>
+inline void seedrng(IntegerVector seed, rengine *rng)
+{
+  if(seed.size() == 1) { rng->seed(seed[0]); return; }
+  rng->seed(0);
+  std::size_t adv = 0;
+  std::memcpy(&adv, &seed[0], sizeof(std::size_t));
+  rng->advance(adv);
+}
+
+
+template<typename rengine>
+inline void rngseed(rengine *rng, IntegerVector seed)
+{
+  rengine originRng(0);
+  std::size_t adv = *rng - originRng;
+  std::memcpy(&seed[0], &adv, sizeof(std::size_t));
+}
+*/
+
+
 
 
 template<typename indtype, typename valtype>
@@ -718,16 +745,17 @@ List simJointTemplate(
   arma::Mat<sampletype> *X = &X_;
   arma::Mat<sampletype> Xcontainer;
   RNG rengine, *rng = &rengine;
-  if(seed.size() == 1) rng->seed(seed[0]);
-  else
-  {
-    if(seed.size() * sizeof(int) != sizeof(RNG))
-    {
-      Rcerr << "`seed` should be either an integer or an integer vector of size 626. Quit.\n";
-      return List::create();
-    }
-    rng = (RNG*)&seed[0];
-  }
+  seedrng<RNG> (seed, rng);
+  // if(seed.size() == 1) rng->seed(seed[0]);
+  // else
+  // {
+  //   if(seed.size() * sizeof(int) != sizeof(RNG))
+  //   {
+  //     Rcerr << "`seed` should be either an integer or an integer vector of size 626. Quit.\n";
+  //     return List::create();
+  //   }
+  //   rng = (RNG*)&seed[0];
+  // }
 
 
   if(usePMF)
@@ -812,6 +840,7 @@ List simJointTemplate(
   }
 
 
+  rngseed<RNG> (rng, seed);
   return List::create(Named("X") = reorderedX, Named("cor") = finalCor);
 }
 
@@ -1495,16 +1524,17 @@ List postSimOpt(NumericMatrix X,
 
 
   RNG rengine, *rng = &rengine;
-  if(seed.size() == 1) rng->seed(seed[0]);
-  else
-  {
-    if(seed.size() * sizeof(int) != sizeof(RNG))
-    {
-      Rcerr << "`seed` should be either an integer or an integer vector of size 626. Quit.\n";
-      return List::create();
-    }
-    rng = (RNG*)&seed[0];
-  }
+  seedrng<RNG> (seed, rng);
+  // if(seed.size() == 1) rng->seed(seed[0]);
+  // else
+  // {
+  //   if(seed.size() * sizeof(int) != sizeof(RNG))
+  //   {
+  //     Rcerr << "`seed` should be either an integer or an integer vector of size 626. Quit.\n";
+  //     return List::create();
+  //   }
+  //   rng = (RNG*)&seed[0];
+  // }
 
 
   // Find initial worst entries in correlation matrix.
@@ -1640,8 +1670,20 @@ List postSimOpt(NumericMatrix X,
       corNew(i, j) = Sigma[i][j].cor;
     }
   }
+
+
+  // recover(valtype *X, INT N, INT K,
+  //         vec<double> &shift, vec<double> &multiplier);
+  // normalize<double> (&x[0][0], N, K, shift, multiplier);
+  recover(&x[0][0], N, K, shift, multiplier);
+
+
+  rngseed<RNG> (rng, seed);
   return List::create(Named("X") = X_, Named("cor") = corNew);
 }
+
+
+
 
 
 

@@ -42,7 +42,7 @@ Cost function for convergence test.
 \code{"meanSquare"}: mean squared error. Default.
 }
   \item{seed}{
-An integer or an integer vector of size 626. A single integer seeds a \code{std::mt19937_64} (C++11 Mersenne Twister) generator the usual way. An integer vector of size 626 supplies all the bits for a \code{std::mt19937_64} object. Default 123.
+An integer or an integer vector of size 4. A single integer seeds a \code{pcg64} generator the usual way. An integer vector of size 4 supplies all the bits for a \code{pcg64} object. Default 123.
 }
   \item{maxCore}{
 An integer. Maximal threads to invoke. Default 7. Better be no greater than the total number of virtual cores on machine.
@@ -71,7 +71,6 @@ A list of size 2.
 # from <https://cran.r-project.org/web/packages/SimMultiCorrData/
 #       vignettes/workflow.html>.
 # =============================================================================
-
 set.seed(123)
 N = 10000L # Sample size.
 K = 10L    # 10 marginals.
@@ -328,8 +327,8 @@ frechetUpperCor = cor(marginals) # The correlation matrix should be
 cat("Range of maximal correlations between marginals:",
     range(frechetUpperCor[frechetUpperCor < 1]))
 # Two perfectly rank-correlated marginals can have a Pearson
-# correlation below 0.07. This is due to highly nonlinear functional
-# relationships between marginal PDFs.
+# correlation below 0.07. This is due to high nonlinearities
+# in marginal PDFs.
 
 
 # Create a valid correlation matrix upper-bounded by `frechetUpperCor`.

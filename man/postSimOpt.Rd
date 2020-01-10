@@ -32,7 +32,7 @@ The \code{K x K} correlation matrix of \code{X}. If empty, calculate the correla
 A numeric vector of probabilities that sum up to 1. In each iteration, the entry having the largest error in the current correlation matrix will be selected with probability \code{acceptProb[1]} for correction; the entry having the second largest error will be selected with probability \code{acceptProb[2]} for correction, etc. Default 1, meaning the entry with the worst error is always chosen.
 }
   \item{seed}{
-An integer or an integer vector of size 626. A single integer seeds a \code{std::mt19937_64} (C++11 Mersenne Twister) generator the usual way. An integer vector of size 626 supplies all the bits for a \code{std::mt19937_64} object. Default 123.
+An integer or an integer vector of size 4. A single integer seeds a \code{pcg64} generator the usual way. An integer vector of size 4 supplies all the bits for a \code{pcg64} object. Default 123.
 }
   \item{convergenceTail}{
 An integer. If the last \code{convergenceTail} iterations did not reduce the cost function, return. Default 100000.

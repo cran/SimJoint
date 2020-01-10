@@ -41,7 +41,7 @@ Cost function for convergence test.
 \code{"meanSquare"}: mean squared error. Default.
 }
   \item{seed}{
-An integer or an integer vector of size 626. A single integer seeds a \code{std::mt19937_64} (C++11 Mersenne Twister) generator the usual way. An integer vector of size 626 supplies all the bits for a \code{std::mt19937_64} object.
+An integer or an integer vector of size 4. A single integer seeds a \code{pcg64} generator the usual way. An integer vector of size 4 supplies all the bits for a \code{pcg64} object.
 }
   \item{maxCore}{
 An integer. Maximal threads to invoke. Default 7. Better be no greater than the total number of virtual cores on machine.

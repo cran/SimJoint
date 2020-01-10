@@ -19,7 +19,7 @@ A 2-column data frame as a PMF. The 1st column is sorted and contains value poin
 Sample size.
 }
   \item{seed}{
-An integer vector of size 1 or 626. Both seed a Mersenne Twister RNG while the latter gives the complete state of the RNG.
+An integer vector of size 1 or 4. Both seed a \code{pcg64} RNG while the latter gives the complete state of the RNG.
 }
 }
 
