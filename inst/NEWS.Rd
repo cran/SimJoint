@@ -3,9 +3,16 @@
 \title{SimJoint updates}
 
 
+\section{Changes in SimJoint version 0.3.5 (20200112)}{
+  \itemize{
+    \item \code{r-patched-solaris-x86} generated compile error due to the fact that the header file \code{/usr/include/floatingpoint.h} used variable name \code{extended}, which is re-declared in \code{SimJoint/src/pcg/pcg_random.hpp}. Changed \code{extended} to \code{pcgExtended} in the latter file.
+  }
+}
+
+
 \section{Changes in SimJoint version 0.3.4 (20200108)}{
   \itemize{
-    \item Changed the random number generator from std::mt19937_64 to pcg64 <http://www.pcg-random.org/>.
+    \item Changed the random number generator from \code{std::mt19937_64} to \code{pcg64} <http://www.pcg-random.org/>.
   }
 }
 
