@@ -101,7 +101,7 @@ for (i in 1:nrow(Rey)) {
 
 result = SimJoint::SJspearman(
   X = marginals, cor = Rey, errorType = "meanSquare", seed = 456,
-  maxCore = 2, convergenceTail = 8, verbose = TRUE)
+  maxCore = 1, convergenceTail = 8, verbose = TRUE)
 
 
 # Check relative errors.
@@ -114,7 +114,7 @@ summary(as.numeric(abs(cor(result$X, method = "spearman") / Rey - 1)))
 # to SJpearson():
 system.time({reorderedRanks = SimJoint::SJpearson(
   X = apply(marginals, 2, function(x) rank(x)), cor = Rey,
-  errorType = "meanSquare", seed = 456, maxCore = 2,
+  errorType = "meanSquare", seed = 456, maxCore = 1,
   convergenceTail = 8, verbose = TRUE)})
 
 

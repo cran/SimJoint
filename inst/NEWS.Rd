@@ -3,6 +3,13 @@
 \title{SimJoint updates}
 
 
+\section{Changes in SimJoint version 0.3.6 (20200331)}{
+  \itemize{
+    \item Upon the request from Brian D. Ripley, time-consuming examples are commented rather than wrapped by \\donttest\{\}.
+  }
+}
+
+
 \section{Changes in SimJoint version 0.3.5 (20200112)}{
   \itemize{
     \item \code{r-patched-solaris-x86} generated compile error due to the fact that the header file \code{/usr/include/floatingpoint.h} used variable name \code{extended}, which is re-declared in \code{SimJoint/src/pcg/pcg_random.hpp}. Changed \code{extended} to \code{pcgExtended} in the latter file.

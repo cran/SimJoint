@@ -105,7 +105,7 @@ for (i in 1:nrow(Rey)) {
 
 system.time({result = SimJoint::xSJpearson(
   X = marginals, cor = Rey, noise = matrix(runif(N * K), ncol = K),
-  errorType = "meanSquare", seed = 456, maxCore = 2,
+  errorType = "meanSquare", seed = 456, maxCore = 1,
   convergenceTail = 8, verbose = TRUE)})
 
 

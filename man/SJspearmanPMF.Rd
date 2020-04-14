@@ -102,7 +102,7 @@ while(TRUE)
 
 result = SimJoint::SJspearmanPMF(
   PMFs = PMFs, sampleSize = N, cor = targetCor, stochasticStepDomain = c(0, 1),
-  errorType = "meanSquare", seed = 456, maxCore = 2, convergenceTail = 8)
+  errorType = "meanSquare", seed = 456, maxCore = 1, convergenceTail = 8)
 
 
 # Visualize errors and correlation matrices.

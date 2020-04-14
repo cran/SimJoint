@@ -66,6 +66,12 @@ A list of size 2.
 \item{cor }{Pearson correlation matrix of \code{X}.}
 }
 \examples{
+# #############################################################################
+# Commented code blocks either require external source, or would exceed
+# execution time constraint for CRAN check.
+# #############################################################################
+
+
 # =============================================================================
 # Benchmark against R package `SimMultiCorrData`. Use the same example
 # from <https://cran.r-project.org/web/packages/SimMultiCorrData/
@@ -143,15 +149,14 @@ summary(as.numeric(round(cor(resultOpt$X) - Rey, 6)))
 # incomprehensive and can only handle 2-dimensional instances. Please change
 # Line 32 to `Target.Corr <- rho` and source the file.
 # =============================================================================
-\donttest{# Test Ruscio-Kaczetow's code.
-set.seed(123)
-RuscioKaczetow = GenData(Pop = as.data.frame(marginals),
-                         Rey, N = 1000) # By default, the function takes 1000
-# samples from each marginal population of size 10000.
-summary(round(as.numeric(cor(RuscioKaczetow) - Rey), 6))
-# Min.         1st Qu.    Median      Mean   3rd Qu.      Max.
-# -0.183274 -0.047461  -0.015737 -0.008008  0.027475  0.236662
-}
+# # Test Ruscio-Kaczetow's code.
+# set.seed(123)
+# RuscioKaczetow = GenData(Pop = as.data.frame(marginals),
+#                          Rey, N = 1000) # By default, the function takes 1000
+# # samples from each marginal population of size 10000.
+# summary(round(as.numeric(cor(RuscioKaczetow) - Rey), 6))
+# # Min.         1st Qu.    Median      Mean   3rd Qu.      Max.
+# # -0.183274 -0.047461  -0.015737 -0.008008  0.027475  0.236662
 
 
 result = SimJoint::SJpearson(
@@ -176,11 +181,10 @@ summary(as.numeric(round(cor(resultOpt$X) - Rey, 6)))
 # example above Statistics cannot be collected because it has been running
 # for more than 10 hours.
 # =============================================================================
-\donttest{# Library `GenOrd` should have been installed and attached.
-system.time({resultGenOrd = ordsample(
-  N, marginal = lapply(1L : K, function(x) (1 : (N - 1)) / N), Rey,
-  support = as.data.frame(marginals))})
-}
+# # Library `GenOrd` should have been installed and attached.
+# system.time({resultGenOrd = ordsample(
+#   N, marginal = lapply(1L : K, function(x) (1 : (N - 1)) / N), Rey,
+#   support = as.data.frame(marginals))})
 
 
 
@@ -190,51 +194,50 @@ system.time({resultGenOrd = ordsample(
 # of <https://cran.r-project.org/web/packages/EnvStats/EnvStats.pdf>. The
 # function `simulateVector()` imposes rank correlations.
 # =============================================================================
-\donttest{# Library `EnvStats` should have been installed and attached.
-cor.mat = matrix(c(1, 0.8, 0, 0.5, 0.8, 1, 0, 0.7, 0, 0, 1, 0.2, 0.5,
-                   0.7, 0.2, 1), 4, 4)
-pareto.rns <- simulateVector(100, "pareto", list(location = 10, shape = 2),
-                             sample.method = "LHS", seed = 56)
-mat <- simulateMvMatrix(
-  1000, distributions = c(Normal = "norm", Lognormal = "lnormAlt",
-                          Beta = "beta", Empirical = "emp"),
-  param.list = list(Normal = list(mean=10, sd=2),
-                    Lognormal = list(mean=10, cv=1),
-                    Beta = list(shape1 = 2, shape2 = 3),
-                    Empirical = list(obs = pareto.rns)),
-  cor.mat = cor.mat, seed = 47, sample.method = "LHS")
-
-
-round(cor(mat, method = "spearman"), 2)
-#          Normal Lognormal    Beta Empirical
-#Normal      1.00    0.78     -0.01      0.47
-#Lognormal   0.78    1.00     -0.01      0.67
-#Beta       -0.01   -0.01      1.00      0.19
-#Empirical   0.47    0.67      0.19      1.00
-
-
-# Imposing rank correlations is equivalent to imposing Pearson correlations
-# on ranks.
-set.seed(123)
-marginals = cbind(sort(rnorm(1000, 10, 2)),
-                  sort(rlnormAlt(1000, 10, 1)),
-                  sort(rbeta(1000, 2, 3)),
-                  sort(sample(pareto.rns, 1000, replace = TRUE)))
-marginalsRanks = cbind(1:1000, 1:1000, 1:1000, 1:1000)
-# Simulate the joint for ranks:
-tmpResult = SimJoint::SJpearson(
-  X = marginalsRanks, cor = cor.mat, errorType = "meanSquare", seed = 456,
-  maxCore = 2, convergenceTail = 8, verbose = TRUE)$X
-# Reorder `marginals` by ranks.
-result = matrix(mapply(function(x, y) y[as.integer(x)],
-                       as.data.frame(tmpResult),
-                       as.data.frame(marginals), SIMPLIFY = TRUE), ncol = 4)
-round(cor(result, method = "spearman"), 2)
-# 1.0  0.8  0.0  0.5
-# 0.8  1.0  0.0  0.7
-# 0.0  0.0  1.0  0.2
-# 0.5  0.7  0.2  1.0
-}
+# # Library `EnvStats` should have been installed and attached.
+# cor.mat = matrix(c(1, 0.8, 0, 0.5, 0.8, 1, 0, 0.7, 0, 0, 1, 0.2, 0.5,
+#                    0.7, 0.2, 1), 4, 4)
+# pareto.rns <- simulateVector(100, "pareto", list(location = 10, shape = 2),
+#                              sample.method = "LHS", seed = 56)
+# mat <- simulateMvMatrix(
+#   1000, distributions = c(Normal = "norm", Lognormal = "lnormAlt",
+#                           Beta = "beta", Empirical = "emp"),
+#   param.list = list(Normal = list(mean=10, sd=2),
+#                     Lognormal = list(mean=10, cv=1),
+#                     Beta = list(shape1 = 2, shape2 = 3),
+#                     Empirical = list(obs = pareto.rns)),
+#   cor.mat = cor.mat, seed = 47, sample.method = "LHS")
+#
+#
+# round(cor(mat, method = "spearman"), 2)
+# #          Normal Lognormal    Beta Empirical
+# #Normal      1.00    0.78     -0.01      0.47
+# #Lognormal   0.78    1.00     -0.01      0.67
+# #Beta       -0.01   -0.01      1.00      0.19
+# #Empirical   0.47    0.67      0.19      1.00
+#
+#
+# # Imposing rank correlations is equivalent to imposing Pearson correlations
+# # on ranks.
+# set.seed(123)
+# marginals = cbind(sort(rnorm(1000, 10, 2)),
+#                   sort(rlnormAlt(1000, 10, 1)),
+#                   sort(rbeta(1000, 2, 3)),
+#                   sort(sample(pareto.rns, 1000, replace = TRUE)))
+# marginalsRanks = cbind(1:1000, 1:1000, 1:1000, 1:1000)
+# # Simulate the joint for ranks:
+# tmpResult = SimJoint::SJpearson(
+#   X = marginalsRanks, cor = cor.mat, errorType = "meanSquare", seed = 456,
+#   maxCore = 2, convergenceTail = 8, verbose = TRUE)$X
+# # Reorder `marginals` by ranks.
+# result = matrix(mapply(function(x, y) y[as.integer(x)],
+#                        as.data.frame(tmpResult),
+#                        as.data.frame(marginals), SIMPLIFY = TRUE), ncol = 4)
+# round(cor(result, method = "spearman"), 2)
+# # 1.0  0.8  0.0  0.5
+# # 0.8  1.0  0.0  0.7
+# # 0.0  0.0  1.0  0.2
+# # 0.5  0.7  0.2  1.0
 
 
 
@@ -348,50 +351,51 @@ while(TRUE)
 result = SimJoint::SJpearson(
   X = marginals, cor = targetCor, stochasticStepDomain = c(0, 1),
   errorType = "meanSquare", seed = 456, maxCore = 2, convergenceTail = 8)
-\donttest{resultOpt = SimJoint::postSimOpt( # Could take many seconds.
-  X = result$X, cor = targetCor, convergenceTail = 10000)
-
-
-# Visualize errors and correlation matrices.
-par(mfrow = c(2, 2))
-hist(resultOpt$cor - targetCor, breaks = K * K, main = NULL,
-     xlab = "Error")
-hist(resultOpt$cor / targetCor - 1, breaks = K * K, main = NULL,
-     xlab = "Relative error")
-zlim = range(range(targetCor[targetCor < 1]),
-             range(resultOpt$cor[resultOpt$cor < 1]))
-col = colorRampPalette(c("blue", "red", "yellow"))(K * K)
-tmp = targetCor[, K : 1L]
-image(tmp, xaxt = "n", yaxt = "n", zlim = zlim, bty = "n",
-      main = "Target cor", col = col)
-tmp = resultOpt$cor[, K : 1L]
-image(tmp, xaxt = "n", yaxt = "n", zlim = zlim, bty = "n",
-      main = "Cor reached", col = col)
-par(mfrow = c(1, 1))}
+# resultOpt = SimJoint::postSimOpt( # Could take many seconds.
+#   X = result$X, cor = targetCor, convergenceTail = 10000)
+#
+#
+# # Visualize errors and correlation matrices.
+# par(mfrow = c(2, 2))
+# hist(resultOpt$cor - targetCor, breaks = K * K, main = NULL,
+#      xlab = "Error")
+# hist(resultOpt$cor / targetCor - 1, breaks = K * K, main = NULL,
+#      xlab = "Relative error")
+# zlim = range(range(targetCor[targetCor < 1]),
+#              range(resultOpt$cor[resultOpt$cor < 1]))
+# col = colorRampPalette(c("blue", "red", "yellow"))(K * K)
+# tmp = targetCor[, K : 1L]
+# image(tmp, xaxt = "n", yaxt = "n", zlim = zlim, bty = "n",
+#       main = "Target cor", col = col)
+# tmp = resultOpt$cor[, K : 1L]
+# image(tmp, xaxt = "n", yaxt = "n", zlim = zlim, bty = "n",
+#       main = "Cor reached", col = col)
+# par(mfrow = c(1, 1))
 
 
 # Different `errorType` could make a difference.
 result = SimJoint::SJpearson(
   X = marginals, cor = targetCor, stochasticStepDomain = c(0, 1),
   errorType = "maxRela", seed = 456, maxCore = 2, convergenceTail = 8)
-\donttest{resultOpt = SimJoint::postSimOpt(
-  X = result$X, cor = targetCor, convergenceTail = 10000)
-
-
-# Visualize errors and correlation matrices.
-par(mfrow = c(2, 2))
-hist(resultOpt$cor - targetCor, breaks = K * K, main = NULL,
-     xlab = "Error")
-hist(resultOpt$cor / targetCor - 1, breaks = K * K, main = NULL,
-     xlab = "Relative error")
-zlim = range(range(targetCor[targetCor < 1]),
-             range(resultOpt$cor[resultOpt$cor < 1]))
-col = colorRampPalette(c("blue", "red", "yellow"))(K * K)
-tmp = targetCor[, K : 1L]
-image(tmp, xaxt = "n", yaxt = "n", zlim = zlim, bty = "n",
-      main = "Target cor", col = col)
-tmp = resultOpt$cor[, K : 1L]
-image(tmp, xaxt = "n", yaxt = "n", zlim = zlim, bty = "n",
-      main = "Cor reached", col = col)
-par(mfrow = c(1, 1))}
+# resultOpt = SimJoint::postSimOpt(
+#   X = result$X, cor = targetCor, convergenceTail = 10000)
+#
+#
+# # Visualize errors and correlation matrices.
+# par(mfrow = c(2, 2))
+# hist(resultOpt$cor - targetCor, breaks = K * K, main = NULL,
+#      xlab = "Error")
+# hist(resultOpt$cor / targetCor - 1, breaks = K * K, main = NULL,
+#      xlab = "Relative error")
+# zlim = range(range(targetCor[targetCor < 1]),
+#              range(resultOpt$cor[resultOpt$cor < 1]))
+# col = colorRampPalette(c("blue", "red", "yellow"))(K * K)
+# tmp = targetCor[, K : 1L]
+# image(tmp, xaxt = "n", yaxt = "n", zlim = zlim, bty = "n",
+#       main = "Target cor", col = col)
+# tmp = resultOpt$cor[, K : 1L]
+# image(tmp, xaxt = "n", yaxt = "n", zlim = zlim, bty = "n",
+#       main = "Cor reached", col = col)
+# par(mfrow = c(1, 1))
 }
+

@@ -102,26 +102,25 @@ while(TRUE)
 
 result = SimJoint::SJpearson(
   X = marginals, cor = targetCor, stochasticStepDomain = c(0, 1),
-  errorType = "meanSquare", seed = 456, maxCore = 2, convergenceTail = 8)
+  errorType = "meanSquare", seed = 456, maxCore = 1, convergenceTail = 8)
 
-\donttest{
-system.time({postOptResult = SimJoint::postSimOpt(
-  X = result$X, cor = targetCor, convergenceTail = 10000)})
-# user  system elapsed
-# 6.66    0.00    6.66
-
-system.time({directOptResult = SimJoint::postSimOpt(
-  X = marginals, cor = targetCor, convergenceTail = 10000)})
-# user  system elapsed
-# 8.48    0.00    8.48
-
-sum((result$cor - targetCor) ^ 2)
-# [1] 0.02209447
-sum((resultOpt$cor - targetCor) ^ 2)
-# [1] 0.0008321346
-sum((directOptResult$cor - targetCor) ^ 2)
-# [1] 0.02400257
-}
+# # Code blocks are commented due to execution time constraint by CRAN check.
+# system.time({postOptResult = SimJoint::postSimOpt(
+#   X = result$X, cor = targetCor, convergenceTail = 10000)})
+# # user  system elapsed
+# # 6.66    0.00    6.66
+#
+# system.time({directOptResult = SimJoint::postSimOpt(
+#   X = marginals, cor = targetCor, convergenceTail = 10000)})
+# # user  system elapsed
+# # 8.48    0.00    8.48
+#
+# sum((result$cor - targetCor) ^ 2)
+# # [1] 0.02209447
+# sum((resultOpt$cor - targetCor) ^ 2)
+# # [1] 0.0008321346
+# sum((directOptResult$cor - targetCor) ^ 2)
+# # [1] 0.02400257
 }
 
 

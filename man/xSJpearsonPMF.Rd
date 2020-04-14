@@ -104,7 +104,7 @@ for (i in 1:nrow(Rey)) {
 
 system.time({result = SimJoint::xSJpearsonPMF(
   PMFs = PMFs, sampleSize = N, noise = matrix(runif(N * K), ncol = K),
-  cor = Rey, errorType = "meanSquare", seed = 456, maxCore = 2,
+  cor = Rey, errorType = "meanSquare", seed = 456, maxCore = 1,
   convergenceTail = 8, verbose = TRUE)})
 
 
