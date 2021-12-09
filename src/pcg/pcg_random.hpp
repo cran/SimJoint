@@ -79,7 +79,10 @@
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
-#define NDEBUG
+// #define NDEBUG
+#ifndef NDEBUG
+  #define NDEBUG
+#endif
 #include <cassert>
 #include <limits>
 #include <iostream>

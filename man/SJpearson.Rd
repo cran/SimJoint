@@ -5,7 +5,7 @@
 Simulate joint given marginals and Pearson correlations.
 }
 \description{
-Reorder elements in each column of a matrix such that the column-wise Pearson correlations approximate a given correlation matrix.
+Reorder elements in each column of a matrix such that the column-wise Pearson correlations approximate a given correlation matrix. Use \code{xSJpearson()} for the freedom of supplying the noise matrix, which can let the dependency structure of the result joint distribution be characterized by a certain copula. See the copula section in the package vignette for details.
 }
 \usage{
 SJpearson(

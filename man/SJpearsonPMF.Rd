@@ -5,7 +5,7 @@
 Simulate joint with marginal PMFs and Pearson correlations.
 }
 \description{
-Sample from marginal probability mass functions via Latin hypercube sampling and then simulate the joint distribution with Pearson correlations.
+Sample from marginal probability mass functions via Latin hypercube sampling and then simulate the joint distribution with Pearson correlations.  Use \code{xSJpearsonPMF()} for the freedom of supplying the noise matrix, which can let the dependency structure of the result joint distribution be characterized by a certain copula. See the copula section in the package vignette for details.
 }
 \usage{
 SJpearsonPMF(

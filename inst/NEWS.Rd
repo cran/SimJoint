@@ -3,6 +3,12 @@
 \title{SimJoint updates}
 
 
+\section{Changes in SimJoint version 0.3.9 (20211208)}{
+  \itemize{
+    \item Updated package vignette and manual. Outlined the fact that choosing certain noise matrices for the algorithm results in joint distributions whose dependency structures can be characterized by corresponding copulas.
+  }
+}
+
 \section{Changes in SimJoint version 0.3.6 (20200331)}{
   \itemize{
     \item Upon the request from Brian D. Ripley, time-consuming examples are commented rather than wrapped by \\donttest\{\}.

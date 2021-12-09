@@ -1,13 +1,13 @@
-0ad54c7381f26e14b7f522219620cf0f *DESCRIPTION
+fb86d8a4d7451042e415f3187185f1a4 *DESCRIPTION
 65ff329fbf2a0a42c9ee00057d0fd652 *NAMESPACE
 a17c73e7ba337adc175939d23778696f *R/RcppExports.R
-232beca92cbed593ecaa03b413bdb6b5 *build/vignette.rds
-855ade0d18b7b7b9cadea4fb2b30b5a0 *inst/NEWS.Rd
-b9d9b8bd3dfbc0f9a563b64207e51377 *inst/doc/SimulatedJointDistribution.pdf
-8b3e50b4cb4b74b5ecc2ea4990c0e324 *inst/doc/SimulatedJointDistribution.pdf.asis
+21d75de541a29df92fe4d68921d4cdcf *build/vignette.rds
+7e38d0e1d6d295515fbba1a1d48f468a *inst/NEWS.Rd
+4605c50bb9b55171616ea79ad961f7fa *inst/doc/SimulatedJointDistribution.pdf
+4d1ff98a758e54a868c92d10c408e47e *inst/doc/SimulatedJointDistribution.pdf.asis
 f5e993ca6e759ee1ebe7cfd2f6b98bce *man/LHSpmf.Rd
-d5157cef381a671de1a320918da81da0 *man/SJpearson.Rd
-c361ab98a6da97eff79b9e0e76acb3cf *man/SJpearsonPMF.Rd
+fc39a84d17e03b7948c25668f256b76e *man/SJpearson.Rd
+f1cbd2bee50530c7227e3ca8f9d02309 *man/SJpearsonPMF.Rd
 6194fde669446663f40b998780979af3 *man/SJspearman.Rd
 0b0ea7c295ef6b5927cba79bc5561609 *man/SJspearmanPMF.Rd
 8b50c764fc3164106820da0f543f88b2 *man/decor.Rd
@@ -17,7 +17,7 @@ e86cc1ea4f8bfddcd086cbd7ff114117 *man/xSJpearson.Rd
 287c6379070343147013f7a89c9e5823 *man/xSJpearsonPMF.Rd
 87b014f758716174166613f53e8acfdb *src/Makevars
 a118337630ab0269ae152a351d2f1765 *src/Makevars.win
-062a0a56137e3d1bb7b0d7c760877a39 *src/RcppExports.cpp
+9a4176991ecc19c71c76439be45784b1 *src/RcppExports.cpp
 ec164d1e820d5f20d3f6e78c78ac71a3 *src/decor.cpp
 0609eaa01614bc9e9c4e99ab9237a146 *src/hpp/LHSsorted.hpp
 5f995fc1236090a31a730183115d95cf *src/hpp/dnyTasking.hpp
@@ -25,7 +25,7 @@ ec164d1e820d5f20d3f6e78c78ac71a3 *src/decor.cpp
 c207849f931783f2e3b0ac025916bab2 *src/lhsPMF.cpp
 4afdc1e7b31831163e2999352a728789 *src/pcg/parallelSeeds.hpp
 c9f36852d222c3f4c7c85f7865234fa3 *src/pcg/pcg_extras.hpp
-a77bbfac36b66fc6756514b379a5e677 *src/pcg/pcg_random.hpp
+dd6903bd12b644d3b648a1c10bd9e34e *src/pcg/pcg_random.hpp
 3cb14b26feb583e9304ee0ea7d4d7b4a *src/pcg/pcg_uint128.hpp
 dd15dd099d0b100f2d4ea7accad56d3e *src/pcg/toSeed.hpp
 7d75a128ee89e723fa6100bcf5cbd53f *tests/funtionExamples/LHSpmf_eg.r
@@ -42,4 +42,4 @@ b8906aca17c153547820b2e1dfcb12b9 *tests/funtionExamples/xSJpearsonPMF_eg.r
 b20e79c3d914adb511c632f4358a46d1 *tests/funtionExamples/xSJpearson_eg.r
 2bc8007adee5fbef99ab12363137bb47 *tests/research/comoWeightExperiment.r
 4f87af8043cafc9afcdee0cfaef5f6fb *tests/rewriteRdFiles/rewriteRdFiles.r
-8b3e50b4cb4b74b5ecc2ea4990c0e324 *vignettes/SimulatedJointDistribution.pdf.asis
+4d1ff98a758e54a868c92d10c408e47e *vignettes/SimulatedJointDistribution.pdf.asis
