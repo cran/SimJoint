@@ -1,4 +1,5 @@
-// [[Rcpp::plugins(cpp11)]]
+// [[Rcpp::plugins(cpp17)]]
+// [[Rcpp::depends(RcppArmadillo)]]
 # include <RcppArmadillo.h>
 # include "hpp/LHSsorted.hpp"
 # include "pcg/pcg_random.hpp"

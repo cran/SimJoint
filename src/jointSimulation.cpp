@@ -1,10 +1,8 @@
-// [[Rcpp::plugins(cpp11)]]
-// [[Rcpp::depends(RcppParallel)]]
-# define ARMA_DONT_PRINT_ERRORS
+// [[Rcpp::plugins(cpp17)]]
+// # define ARMA_DONT_PRINT_ERRORS
 // [[Rcpp::depends(RcppArmadillo)]]
 # include <RcppArmadillo.h>
-# include <RcppParallel.h>
-# include "hpp/dnyTasking.hpp"
+#include "hpp/ThreadPool.hpp"
 # include "pcg/pcg_random.hpp"
 # include "hpp/LHSsorted.hpp"
 # include "pcg/toSeed.hpp"
@@ -67,6 +65,7 @@ void reorder(valtype0 *x, indtype xsize, valtype1 *y,
 
 // Populate Y[, i] with elements in X[, i] while preserving
 // ranks of elements in the original Y[, i].
+/*
 template<typename indtype, typename valtype0, typename valtype1>
 struct rankCorrelate: public RcppParallel::Worker
 {
@@ -95,8 +94,23 @@ struct rankCorrelate: public RcppParallel::Worker
     parallelFor(0, maxCore, *this);
   }
 };
+*/
 
 
+template<typename indtype, typename valtype0, typename valtype1>
+void rankCorrelate(indtype N, indtype K, valtype0 *X, valtype1 *Y,
+                   vec<vec<indtype> > &auxVectors, 
+                   Charlie::ThreadPool &cp)
+{
+  auto f = [&](std::size_t i, std::size_t t)->bool
+  {
+    auto offset = i * N;
+    reorder<indtype, valtype0, valtype1> (
+        X + offset, N, Y + offset, Y + offset, auxVectors[t]);
+    return false;
+  };
+  cp.parFor(0, K, f);
+}
 
 
 /*
@@ -112,23 +126,27 @@ NumericVector reorderTest(NumericVector x, NumericVector y)
 */
 
 
-
-
+/*
 template<typename indtype, typename valtype0, typename valtype1, typename valtype2>
-struct paraMatMulTriMat: public RcppParallel::Worker
+// struct paraMatMulTriMat: public RcppParallel::Worker
+struct paraMatMulTriMat
 {
   indtype N, K;
   valtype0 *X; // Full matrix on the left. N x K, row-major.
   valtype1 *R; // Upper triangle matrix on the right. K x K.
   valtype2 *rst; // N x K, column-major. Compute rst = X * R.
   dynamicTasking *dT;
-  void operator() (std::size_t st, std::size_t end)
+  // void operator() (std::size_t st, std::size_t end)
+  void f(std::size_t st, std::size_t end)
   {
     for(;;)
     {
       std::size_t objI = 0;
       if(!dT->nextTaskID(objI)) break;
       objI = K - 1 - objI;
+      Rcout << "objI = " << objI << ", ";
+      Rcout << "K = " << K << ", ";
+      // Rcout << ""
       std::size_t siz = objI + 1;
       valtype1 *Rstart = R + objI * K;
       valtype2 *rstCol = rst + objI * N;
@@ -141,13 +159,34 @@ struct paraMatMulTriMat: public RcppParallel::Worker
     N(N), K(K), X(X), R(R), rst(rst)
   {
     dynamicTasking dt(maxCore, K); dT = &dt;
-    parallelFor(0, maxCore, *this);
+    Rcout << "in paraMatMulTriMat: maxCore = " << maxCore << ", ";
+    // parallelFor(0, maxCore, *this);
+    f(0, maxCore);
+    Rcout << "Out of paraMatMulTriMat\n";
   }
 };
+*/
 
 
+template<typename indtype, typename valtype0, typename valtype1, typename valtype2>
+void paraMatMulTriMat(indtype N, indtype K, valtype0 *X,
+                      valtype1 *R, valtype2 *rst, Charlie::ThreadPool &cp)
+{
+  auto f = [&](std::size_t objI, std::size_t t)->bool
+  {
+    objI = K - 1 - objI;
+    std::size_t siz = objI + 1;
+    valtype1 *Rstart = R + objI * K;
+    valtype2 *rstCol = rst + objI * N;
+    for(indtype i = 0; i < N; ++i)
+      rstCol[i] = std::inner_product(Rstart, Rstart + siz, X + i * K, 0.0);
+    return false;
+  };
+  cp.parFor(0, K, f);
+}
 
 
+/*
 template<typename indtype, typename valtype0, typename valtype1, typename valtype2>
 struct paraMatMulFullMat: public RcppParallel::Worker
 {
@@ -179,10 +218,29 @@ struct paraMatMulFullMat: public RcppParallel::Worker
     parallelFor(0, maxCore, *this);
   }
 };
+*/
 
 
+template<typename indtype, typename valtype0, typename valtype1, typename valtype2>
+void paraMatMulFullMat(indtype N, indtype P, indtype K, valtype0 *X,
+                       valtype1 *R, valtype2 *rst, Charlie::ThreadPool &cp)
+{
+  auto f = [&](std::size_t objI, std::size_t t)->bool
+  {
+    valtype2 *rstCol = rst + objI * N;
+    valtype1 *Rcol = R + objI * P;
+    for(indtype i = 0; i < N; ++i)
+    {
+      valtype0 *start = X + i * P;
+      rstCol[i] = std::inner_product(start, start + P, Rcol, 0.0);
+    }
+    return false;
+  };
+  cp.parFor(0, K, f);
+}
+                        
 
-
+/*
 template<typename indtype, typename sampletype, typename cortype>
 struct correlation: public RcppParallel::Worker
 {
@@ -212,8 +270,26 @@ struct correlation: public RcppParallel::Worker
     parallelFor(0, maxCore, *this);
   }
 };
+*/
 
 
+template<typename indtype, typename sampletype, typename cortype>
+void correlation(indtype N, indtype K, sampletype *X, cortype *C, 
+                 Charlie::ThreadPool &cp)
+{
+  auto f = [&](std::size_t objI, std::size_t t)->bool
+  {
+    cortype *rst = C + objI * (K - 1 + K - objI) / 2;
+    for(indtype i = 0, iend = K - 1 - objI; i < iend; ++i)
+    {
+      indtype theOtherCol = objI + i + 1;
+      rst[i] = std::inner_product(
+        X + objI * N, X + objI * N + N, X + theOtherCol * N, 0.0);
+    }
+    return false;
+  };
+  cp.parFor(0, K, f);
+}
 
 
 // errType == 0: average absolute relative error.
@@ -499,7 +575,8 @@ void simJointPearsonTemplate(
     return;
   }
 
-
+  
+  Charlie::ThreadPool cp(std::move(maxCore));
   vec<vec<uint_fast32_t> > auxForImanConover(maxCore, vec<uint_fast32_t> (N));
   double bestErr = std::numeric_limits<double>::max();
 
@@ -509,20 +586,29 @@ void simJointPearsonTemplate(
   {
     if(verbose) Rcout << "Iteration = " << iter + 1 << ": ";
 
+    
+    // Rcout << "1.1, fact = " << fact << "\n";
+    
 
     if(fact == 1) paraMatMulTriMat<INT, sampletype, cortype, sampletype> (
-      N, K, &(*Xr)[0], &factMat[0], &Y[0], maxCore);
+      N, K, &(*Xr)[0], &factMat[0], &Y[0], cp);
     else paraMatMulFullMat<INT, sampletype, cortype, sampletype> (
-        N, K, K, &(*Xr)[0], &factMat[0], &Y[0], maxCore);
+        N, K, K, &(*Xr)[0], &factMat[0], &Y[0], cp);
 
+    
+    // Rcout << "1.2\n";
+    
 
     rankCorrelate<uint_fast32_t, sampletype, sampletype> (
-        N, K, &X[0], &Y[0], auxForImanConover, maxCore);
+        N, K, &X[0], &Y[0], auxForImanConover, cp);
 
+    
+    // Rcout << "1.3\n\n";
+    
 
     // New correlation matrix is in corMatReached.
     correlation<INT, sampletype, cortype> (
-        N, K, &Y[0], &corTriMatReached[0], maxCore);
+        N, K, &Y[0], &corTriMatReached[0], cp);
 
 
     double err = overallErr<INT, double, errType> (
