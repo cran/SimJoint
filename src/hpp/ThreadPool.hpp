@@ -45,6 +45,61 @@ struct dynamicTasking
 //    run, beforeRun, afterRun, then constructor will be a problem because it
 //    cannot deduce the template parameters.
 //   2. Capturing lambda cannot be converted to function pointer.
+// Tests have shown std::for_each(std::execution::par_unseq, , ) can be much slower:
+
+
+/*
+// [[Rcpp::export]]
+int paraSummation(IntegerVector x, int maxCore = 1000)
+{
+  Charlie::ThreadPool cp(std::move(maxCore));
+  std::vector<int> S(maxCore, 0);
+  cp.parFor(0, x.size(), [&](std::size_t i, std::size_t t)->bool
+  { 
+    S[t] += (x[i] / 31 + x[i] / 131 + x[i] / 73 + x[i] / 37 + x[i] / 41) / 7;
+    return false; // Return true indicates early return.
+  }, x.size() / (maxCore * maxCore * maxCore) + 1);
+  return std::accumulate(S.begin(), S.end(), 0);
+}
+
+
+// [[Rcpp::export]]
+int paraSummationStd(IntegerVector x)
+{
+  std::atomic<int> S = 0;
+  std::for_each(
+    std::execution::par_unseq, x.begin(), x.end(), [&S](int xi)->void
+    {
+      S.fetch_add(
+        (xi / 31 + xi / 131 + xi / 73 + xi / 37 + xi / 41) / 7, 
+        std::memory_order_relaxed);
+      // S += (xi / 31 + xi / 131 + xi / 73 + xi / 37 + xi / 41) / 7;
+    });
+  return S;
+} 
+
+
+// [[Rcpp::export]]
+int paraSummationStd2(IntegerVector x)
+{
+  // std::atomic<int> S = 0;
+  std::unordered_map<std::thread::id, int> S;
+  std::for_each(
+    std::execution::par_unseq, x.begin(), x.end(), [&S](int xi)->void
+    { 
+      auto id = std::this_thread::get_id();
+      auto it = S.find(id);
+      if ( it  == S.end()) S[id] = 0;
+      else it->second += (xi / 31 + xi / 131 + xi / 73 + xi / 37 + xi / 41) / 7;
+    });
+  int rst = 0;
+  for (auto &x: S) rst += x.second;
+  return rst;
+}  
+
+*/
+
+
 // =============================================================================
 struct ThreadPool
 {
@@ -96,7 +151,6 @@ struct ThreadPool
   // ===========================================================================
   void initialize(int &&maxCore)
   {
-    // Rcout << "maxCore = " << maxCore << "\n";
     maxCore = std::max<int> (1, std::min<int> (
       std::thread::hardware_concurrency(), maxCore));
     // Rcout << "std::thread::hardware_concurrency() = " << std::thread::hardware_concurrency() << "\n";
@@ -108,13 +162,18 @@ struct ThreadPool
     // haveFood[maxCore] == true would imply the thread pool is about to be 
     //   destroyed.
     // =========================================================================
-    haveFood = new volatile bool [maxCore + 1]; 
-    
-    
+    haveFood = new volatile bool [maxCore + 1];
     std::fill(haveFood, haveFood + maxCore + 1, false);
-    tp = new std::thread [maxCore];
+    
+    
+    // tp = new std::thread [maxCore];
+    // for (int i = 1; i < maxCore; ++i) // Fire up all the worker threads.
+    //   tp[i] = std::thread(&ThreadPool::live, this, i);
+    
+    
+    tp = new std::thread [maxCore - 1];
     for (int i = 1; i < maxCore; ++i) // Fire up all the worker threads.
-      tp[i] = std::thread(&ThreadPool::live, this, i);
+      tp[i-1] = std::thread(&ThreadPool::live, this, i);
   }
 
 
@@ -122,7 +181,8 @@ struct ThreadPool
   {
     if (maxCore <= 1) return;
     haveFood[maxCore] = true;
-    for (int i = 1; i < maxCore; ++i) tp[i].join();
+    // for (int i = 1; i < maxCore; ++i) tp[i].join();
+    for (int i = 1; i < maxCore; ++i) tp[i-1].join();
     delete [] tp;
     tp = nullptr;
     delete [] haveFood;
@@ -148,8 +208,8 @@ struct ThreadPool
   // ===========================================================================
   // maxCore will be changed if it exceeds the maximum number of cores on machine.
   // ===========================================================================
-  ThreadPool( int &&maxCore ) { initialize(  std::move(maxCore)  ); }
-  ThreadPool() {  maxCore = 0; }
+  ThreadPool( int &&maxCore ) { haveFood = nullptr; initialize(  std::move(maxCore)  ); }
+  ThreadPool() { haveFood = nullptr;  maxCore = 0; }
 
 
   ~ThreadPool() { if (haveFood != nullptr) destroy(); }

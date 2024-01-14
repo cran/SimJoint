@@ -1,4 +1,4 @@
-c06185ca4c6bb51edb19cc3904cb243b *DESCRIPTION
+546b2de7a610e5f32811f2c431ed1580 *DESCRIPTION
 2d306381adbe28527ffa3ab5a0fabdb7 *NAMESPACE
 a17c73e7ba337adc175939d23778696f *R/RcppExports.R
 098d9b08eca636070ec876358d02a47f *build/vignette.rds
@@ -20,7 +20,8 @@ a903b19df84bc91bf69d2919312cb63e *src/Makevars.win
 9a4176991ecc19c71c76439be45784b1 *src/RcppExports.cpp
 4c57b0de9321580f34740db5523cbc8a *src/decor.cpp
 0609eaa01614bc9e9c4e99ab9237a146 *src/hpp/LHSsorted.hpp
-0ca2d5a836ffcc49c37d81699e027e71 *src/hpp/ThreadPool.hpp
+802a59044260ee8a387da36d66a61ccd *src/hpp/MiniPCG.hpp
+4d09388847f44fac9168f655d7b37da9 *src/hpp/ThreadPool.hpp
 5f995fc1236090a31a730183115d95cf *src/hpp/archive/dnyTasking.hpp
 4994b542cfa7393ba1d93db93c5cbeb9 *src/jointSimulation.cpp
 f6ec2ccbec2d26c597a23476efd041ed *src/lhsPMF.cpp
@@ -39,6 +40,7 @@ feb66dea135d93618ac0395a37b710ef *tests/funtionExamples/deCorSimDat_eg.r
 05887a7756fd44e551c8b403f0ca0d7f *tests/funtionExamples/exportRandomState_eg.r
 f81dfc2e9393051515c9cbecda41754c *tests/funtionExamples/extra.r
 26bb3e3a076c21d9251b6f8029c4e1bd *tests/funtionExamples/postSimOpt_eg.r
+92faa0a9a9d9b8ec63d0ecc52457b010 *tests/funtionExamples/valgrindTest.r
 b8906aca17c153547820b2e1dfcb12b9 *tests/funtionExamples/xSJpearsonPMF_eg.r
 b20e79c3d914adb511c632f4358a46d1 *tests/funtionExamples/xSJpearson_eg.r
 2bc8007adee5fbef99ab12363137bb47 *tests/research/comoWeightExperiment.r
